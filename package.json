@@ -1,0 +1,41 @@
+{
+  "name": "edge-scs",
+  "author": {
+    "name": "Glenn Block",
+    "email": "glenn.block@gmail.com",
+    "url": "http://codebetter.com/glennblock"
+  },
+  "version": "0.1.0",
+  "description": "Edge-scs: run C# scripts and node.js code in-process with edge.js",
+  "tags": [
+    "edge",
+    "net",
+    "clr",
+    "c#",
+    "managed",
+    ".net",
+    "scriptcs"
+  ],
+  "main": "./lib/edge-scs.js",
+  "engines": {
+    "node": ">= 0.6"
+  },
+  "licenses": [
+    {
+      "type": "Apache",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  ],
+  "dependencies": {},
+  "homepage": "http://github.com/glennblock/edge-scs",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:glennblock/edge-scs.git"
+  },
+  "bugs": {
+    "url": "http://github.com/glennblock/edge-scs/issues"
+  },
+  "readmeFilename": "README.md",
+  "_id": "edge-scs@0.1.0",
+  "_from": "edge-scs@0.1.0"
+}
