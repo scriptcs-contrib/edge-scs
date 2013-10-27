@@ -56,8 +56,10 @@ public class EdgeCompiler
 
     public Func<object, Task<object>> CompileFunc(IDictionary<string, object> parameters)
     {
-        string source = (string) parameters["source"];
-        string lineDirective = string.Empty;
+        var source = (string) parameters["source"];
+        var jsFileName = (string) parameters["jsFileName"];
+        var rootPath = Path.GetDirectoryName(jsFileName);
+        var lineDirective = string.Empty;
         Func<object, Task<object>> invoker = null;
 
         // read source from file
@@ -72,7 +74,7 @@ public class EdgeCompiler
         // try to compile source code as a class library
         string errors;
 
-        var executor = GetExecutor(references);
+        var executor = GetExecutor(references, rootPath);
 
         if (!this.TryCompile(source, executor, out errors, out invoker))
         {
@@ -101,7 +103,7 @@ public class EdgeCompiler
         return references;
     }
 
-    private IScriptExecutor GetExecutor(List<string> references)
+    private IScriptExecutor GetExecutor(List<string> references, string rootPath)
     {
         var console = new ScriptConsole();
         var loggerConfig = new LoggerConfigurator(ScriptCs.Contracts.LogLevel.Error);
@@ -109,11 +111,15 @@ public class EdgeCompiler
         var logger = loggerConfig.GetLogger();
 
         var builder = new ScriptServicesBuilder(console, logger).
-            InMemory(true);
+            InMemory(true).
+            ScriptName("");
 
         var services = builder.Build();
         var executor = services.Executor;
-        executor.Initialize(Enumerable.Empty<string>(), services.ScriptPackResolver.GetPacks());
+        var paths = services.AssemblyResolver.GetAssemblyPaths(rootPath, null).Where(p=>!p.Contains("Contracts"));
+        
+        var packs = services.ScriptPackResolver.GetPacks();
+        executor.Initialize(paths, packs);
 
         executor.AddReferences(references.ToArray());
         var reference = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\ScriptCs.Contracts.dll";
