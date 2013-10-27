@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Autofac.Core;
 using NuGet;
 using ScriptCs;
 using ScriptCs.Contracts;
@@ -112,7 +113,7 @@ public class EdgeCompiler
 
         var services = builder.Build();
         var executor = services.Executor;
-        executor.Initialize(Enumerable.Empty<string>(), Enumerable.Empty<IScriptPack>());
+        executor.Initialize(Enumerable.Empty<string>(), services.ScriptPackResolver.GetPacks());
 
         executor.AddReferences(references.ToArray());
         var reference = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\ScriptCs.Contracts.dll";
