@@ -7,7 +7,7 @@
     <ProjectGuid>{FC40F214-8615-497D-A0DF-915F70A741F7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>edge_scs</RootNamespace>
+    <RootNamespace>EdgeScs</RootNamespace>
     <AssemblyName>edge-scs</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

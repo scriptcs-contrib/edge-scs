@@ -6,19 +6,17 @@ edge-scs is an extension for [edge](https://github.com/tjanczuk/edge) that allow
 
 ## Hello edge-scs
 
-Below is a snippet of using scriptcs from edge
+Below is a simple snippet of using scriptcs from edge
 
 ```javascript
 var edge = require('edge');
 var hello = edge.func('scs', function() {/*
-Func<IDictionary<string,object>, Task<object>> execute = p=> Task.FromResult<object>(p["value"]); 
-execute
+static object Invoke(string s) {
+    return s;
+}
 */});
-hello({"value": "Hello from scriptcs"}, function(error,result) {
+hello("Hello from scriptcs", function(error,result) {
     if (error) throw error;
-    console.log(result.Result);
-}); 
+    console.log(result);
+});  
 ```
-
-
-
