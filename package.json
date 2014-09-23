@@ -26,8 +26,12 @@
       "url": "http://www.apache.org/licenses/LICENSE-2.0"
     }
   ],
-  "dependencies": {},
-  "scripts": {"install" : "install"},
+  "dependencies": {
+    "msbuild": "^0.2.0"
+  },
+  "scripts": {
+    "install": "install"
+  },
   "homepage": "http://github.com/glennblock/edge-scs",
   "repository": {
     "type": "git",
