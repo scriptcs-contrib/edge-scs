@@ -27,6 +27,7 @@
     }
   ],
   "dependencies": {},
+  "scripts": {"install" : "install"},
   "homepage": "http://github.com/glennblock/edge-scs",
   "repository": {
     "type": "git",
