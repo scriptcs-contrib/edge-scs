@@ -1,4 +1,4 @@
-var version = "0.10.2"
+var version = "0.8.1"
 
 var request = require('request');
 var unzip = require('unzip');
