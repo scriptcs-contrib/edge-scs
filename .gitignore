@@ -109,3 +109,4 @@ Backup*/
 UpgradeLog*.XML
 
 node_modules
+scs/
