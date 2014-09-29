@@ -8,9 +8,8 @@ var path = require('path');
 var getScriptCs = function() {
 	var response = request("http://chocolatey.org/api/v2/package/ScriptCs/" + version);
 
-	response.pipe(unzip.Extract({path:"scs"}));
-
-	response.on("end", function(){
+	response.pipe(unzip.Extract({path:"scs"}))
+	.on("end", function(){
 		copyDir(path.join("scs","tools","scriptcs"), "lib");
 	});
 }
