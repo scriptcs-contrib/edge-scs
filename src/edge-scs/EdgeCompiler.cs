@@ -7,51 +7,41 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Autofac.Core;
+using Common.Logging;
+using EdgeScs;
 using NuGet;
 using ScriptCs;
 using ScriptCs.Contracts;
-using ScriptCs.Engine.Roslyn;
 using ScriptCs.Exceptions;
 using System.Threading.Tasks;
 
 //based on EdgeCompiler code in edge-cs: https://github.com/tjanczuk/edge-cs/blob/master/src/edge-cs/EdgeCompiler.cs
+using ScriptCs.Hosting;
+
 public class EdgeCompiler
 {
     private static readonly bool debuggingEnabled =
         !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("EDGE_CS_DEBUG"));
 
-    private static Dictionary<string, Assembly> referencedAssemblies = new Dictionary<string, Assembly>();
-
-    private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
-    { 
-        var name = new AssemblyName(args.Name).Name;
-        Assembly assembly = null;
-        var found = referencedAssemblies.TryGetValue(name, out assembly);
-        return assembly;
-    }
+    private static ScriptConsole _console;
+    private static ILog _logger;
+    private static IInitializationServices _initializationServices;
 
     static EdgeCompiler()
     {
-        //add System.Core
-        referencedAssemblies.Add(typeof (Enumerable).Assembly.GetName().Name, typeof (Enumerable).Assembly);
+        _console = new ScriptConsole();
+        var loggerConfig = new LoggerConfigurator(ScriptCs.Contracts.LogLevel.Error);
+        loggerConfig.Configure(_console);
+        _logger = loggerConfig.GetLogger();
+        var overrides = new Dictionary<Type, object>();
+        overrides[typeof (ScriptCs.Contracts.IFileSystem)] = typeof (EdgeFileSystem);
 
-        //add System
-        referencedAssemblies.Add(typeof (Uri).Assembly.GetName().Name, typeof (Uri).Assembly);
+        _initializationServices = new InitializationServices(_logger, overrides);
 
-        var edgeAssembly = Assembly.GetExecutingAssembly();
-        var bin = Path.GetDirectoryName(edgeAssembly.Location);
-
-        //populate the assembly cache
-        foreach (var file in Directory.GetFiles(bin, "*.dll"))
-        {
-            var assembly = Assembly.LoadFile(file);
-
-            if (!referencedAssemblies.ContainsKey(assembly.FullName))
-                referencedAssemblies.Add(assembly.GetName().Name, assembly);
-        }
-
-        AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-
+        var resolver = _initializationServices.GetAppDomainAssemblyResolver();
+        var dir = Path.GetDirectoryName(typeof (EdgeCompiler).Assembly.Location);
+        var assemblies = Directory.GetFiles(dir, "*.dll");
+        resolver.AddAssemblyPaths(assemblies);
     }
 
     public Func<object, Task<object>> CompileFunc(IDictionary<string, object> parameters)
@@ -105,19 +95,16 @@ public class EdgeCompiler
 
     private IScriptExecutor GetExecutor(List<string> references, string rootPath)
     {
-        var console = new ScriptConsole();
-        var loggerConfig = new LoggerConfigurator(ScriptCs.Contracts.LogLevel.Error);
-        loggerConfig.Configure(console);
-        var logger = loggerConfig.GetLogger();
 
-        var builder = new ScriptServicesBuilder(console, logger).
-            InMemory(true).
+        var builder = new ScriptServicesBuilder(_console, _logger, initializationServices: _initializationServices).
+            Debug(true).
             ScriptName("");
 
+        builder.LoadModules("csx");
         var services = builder.Build();
         var executor = services.Executor;
-        var paths = services.AssemblyResolver.GetAssemblyPaths(rootPath, null).Where(p=>!p.Contains("Contracts"));
-        
+        var scriptcsPaths = services.FileSystem.EnumerateBinaries(Path.Combine(rootPath, "node_modules", "edge-scs", "lib"), SearchOption.TopDirectoryOnly);
+        var paths = scriptcsPaths.Union(services.AssemblyResolver.GetAssemblyPaths(rootPath, true)).Where(p=>!p.Contains("Contracts"));
         var packs = services.ScriptPackResolver.GetPacks();
         executor.Initialize(paths, packs);
 

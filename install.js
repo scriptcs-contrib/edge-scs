@@ -1,4 +1,4 @@
-var version = "0.8.1"
+var version = "0.10.2"
 
 var request = require('request');
 var unzip = require('unzip');
@@ -8,30 +8,9 @@ var path = require('path');
 var getScriptCs = function() {
 	var response = request("http://chocolatey.org/api/v2/package/ScriptCs/" + version);
 
-	response.pipe(unzip.Extract({path:"scs"}));
-
-	response.on("end", function(){
+	response.pipe(unzip.Extract({path:"scs"}))
+	.on("close", function(){
 		copyDir(path.join("scs","tools","scriptcs"), "lib");
-	});
-}
-
-var getRoslynCompilersCSharp = function() {
-	var response = request("http://nuget.org/api/v2/package/Roslyn.Compilers.CSharp/1.2.20906.2");
-
-	response.pipe(unzip.Extract({path:"roslyn1"}));
-
-	response.on("end", function(){
-		copyDir(path.join("roslyn1","lib","net45"), "lib");
-	});
-}
-
-var getRoslynCompilersCommon = function() {
-	var response = request("http://nuget.org/api/v2/package/Roslyn.Compilers.Common/1.2.20906.2");
-
-	response.pipe(unzip.Extract({path:"roslyn2"}));
-
-	response.on("end", function(){
-		copyDir(path.join("roslyn2","lib","net45"), "lib");
 	});
 }
 
@@ -55,5 +34,3 @@ var copy = function(src, dest) {
 };
 
 getScriptCs();
-getRoslynCompilersCSharp();
-getRoslynCompilersCommon();
