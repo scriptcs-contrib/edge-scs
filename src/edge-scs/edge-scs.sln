@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "edge-scs", "edge-scs.csproj", "{FC40F214-8615-497D-A0DF-915F70A741F7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{96B939FE-E2CB-452D-8034-90CCA90DE754}"
@@ -8,6 +10,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{96B939
 		.nuget\NuGet.Config = .nuget\NuGet.Config
 		.nuget\NuGet.exe = .nuget\NuGet.exe
 		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E7B8255C-5CC2-4ECB-A06E-8916728504CA}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\scriptcs\src\ScriptCs.Core\AppDomainAssemblyResolver.cs = ..\..\..\scriptcs\src\ScriptCs.Core\AppDomainAssemblyResolver.cs
 	EndProjectSection
 EndProject
 Global
