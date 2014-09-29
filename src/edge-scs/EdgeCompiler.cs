@@ -26,6 +26,7 @@ public class EdgeCompiler
     private static ScriptConsole _console;
     private static ILog _logger;
     private static IInitializationServices _initializationServices;
+    private static string _libPath;
 
     static EdgeCompiler()
     {
@@ -39,8 +40,8 @@ public class EdgeCompiler
         _initializationServices = new InitializationServices(_logger, overrides);
 
         var resolver = _initializationServices.GetAppDomainAssemblyResolver();
-        var dir = Path.GetDirectoryName(typeof (EdgeCompiler).Assembly.Location);
-        var assemblies = Directory.GetFiles(dir, "*.dll");
+        _libPath = Path.GetDirectoryName(typeof (EdgeCompiler).Assembly.Location);
+        var assemblies = Directory.GetFiles(_libPath, "*.dll");
         resolver.AddAssemblyPaths(assemblies);
     }
 
@@ -97,7 +98,6 @@ public class EdgeCompiler
     {
 
         var builder = new ScriptServicesBuilder(_console, _logger, initializationServices: _initializationServices).
-            Debug(true).
             ScriptName("");
 
         builder.LoadModules("csx");
@@ -109,7 +109,7 @@ public class EdgeCompiler
         executor.Initialize(paths, packs);
 
         executor.AddReferences(references.ToArray());
-        var reference = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\ScriptCs.Contracts.dll";
+        var reference = Path.Combine(_libPath, "ScriptCs.Contracts.dll");
         executor.AddReferences(reference);
         executor.ImportNamespaces("ScriptCs.Contracts");
         return executor;
