@@ -9,7 +9,7 @@ var getScriptCs = function() {
 	var response = request("http://chocolatey.org/api/v2/package/ScriptCs/" + version);
 
 	response.pipe(unzip.Extract({path:"scs"}))
-	.on("end", function(){
+	.on("close", function(){
 		copyDir(path.join("scs","tools","scriptcs"), "lib");
 	});
 }
